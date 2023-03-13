@@ -38,7 +38,7 @@ int meanShift(cv::Mat& image) {
 			int G = pixel[1];
 			int R = pixel[2];
 			Point p = { col, row, R, G, B };
-			Point shifted = shift(p);
+			Point shifted = shift(p, image);
 			//cluster(shifted, clusters);
 		}
 	}
@@ -51,7 +51,7 @@ int meanShift(cv::Mat& image) {
 	return clusters.size();
 }
 
-Point shift(Point p) {
+Point shift(Point p, const cv::Mat& images) {
 	return p;
 }
 
