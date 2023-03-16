@@ -17,6 +17,86 @@ struct Point {
 			&& std::abs(G - other.G) < EPSILON
 			&& std::abs(B - other.B) < EPSILON;
 	}
+
+	Point& operator-=(const Point& other) {
+		X -= other.X;
+		Y -= other.Y;
+		R -= other.R;
+		G -= other.G;
+		B -= other.B;
+		return (*this);
+	}
+
+	Point& operator-(const Point& other) {
+		Point sP = (*this);
+		sP.X -= other.X;
+		sP.Y -= other.Y;
+		sP.R -= other.R;
+		sP.G -= other.G;
+		sP.B -= other.B;
+		return sP;
+	}
+
+	Point& operator+=(const Point& other) {
+		X += other.X;
+		Y += other.Y;
+		R += other.R;
+		G += other.G;
+		B += other.B;
+		return (*this);
+	}
+
+	Point& abs() {
+		if (X < 0) X = -X;
+		if (Y < 0) Y = -Y;
+		if (R < 0) R = -R;
+		if (G < 0) G = -G;
+		if (B < 0) B = -B;
+
+		return (*this);
+	}
+
+	Point& operator/(const Point& other) {
+		Point dP = *this;
+		dP.X /= other.X;
+		dP.Y /= other.Y;
+		dP.R /= other.R;
+		dP.G /= other.G;
+		dP.B /= other.B;
+
+		return (*this);
+	}
+
+	Point& operator*(const double d) {
+		Point mP = *this;
+		mP.X *= d;
+		mP.Y *= d;
+		mP.R *= d;
+		mP.G *= d;
+		mP.B *= d;
+
+		return mP;
+	}
+
+	Point& operator*(const Point& other){
+		Point mP = *this;
+		mP.X *= other.X;
+		mP.Y *= other.Y;
+		mP.R *= other.R;
+		mP.G *= other.G;
+		mP.B *= other.B;
+
+		return mP;
+	}
+
+	Point& exp() {
+		X = std::exp(X);
+		Y = std::exp(Y);
+		R = std::exp(R);
+		G = std::exp(G);
+		B = std::exp(B);
+		return (*this);
+	}
 };
 
 struct Cluster {
@@ -39,19 +119,79 @@ int meanShift(cv::Mat& image) {
 			int R = pixel[2];
 			Point p = { col, row, R, G, B };
 			Point shifted = shift(p, image);
-			//cluster(shifted, clusters);
+			cluster(shifted, clusters);
+			printf("debug 1");
 		}
 	}
 
 	// Mark clusters
 	for (const Cluster& c : clusters) {
 		drawMarker(image, c.mean);
-	}
+		printf("debug 2");
 
+	}
+	printf("debug 3");
 	return clusters.size();
 }
 
-Point shift(Point p, const cv::Mat& images) {
+Point cylindricalKernelFunction(Point x, Point xi, double c) {
+	Point distSqrd = (xi -= x) * (xi -= x) * -c;
+	return distSqrd.exp();
+}
+
+Point shift(Point p, const cv::Mat& image) {
+	// 1 ) get neighbourhood of pixels
+
+
+	// Naive implementation iterate through all pixels and check a given condition
+	// Naive vector, as we know the size of array necessary for a given bandwidth
+	std::vector<Point> neighbourhood;
+	Point gradientSumUpper;
+	Point gradientSumLower;
+	int bandwidth_hs = 3;
+	int bandwidth_hr = 2;
+	double C = 2;
+	int iterations = 10;
+
+
+	for (int i = 0; i < iterations; i++)
+	{
+		for (int row = 0; row < image.rows; ++row) {
+			for (int col = 0; col < image.cols; ++col) {
+				int absX = std::abs(col - p.Y);
+				int absY = std::abs(row - p.X);
+
+				// if we do cylindrical we only care about hs (not colour space)!
+				if (absX * absX + absY * absY <= bandwidth_hs * bandwidth_hs) {
+					cv::Vec3b pixel = image.at<cv::Vec3b>(row, col);
+					int B = pixel[0];
+					int G = pixel[1];
+					int R = pixel[2];
+					Point n = { col, row, R, G, B };
+
+					Point kernelVal = cylindricalKernelFunction(p, n, C);
+					gradientSumLower += kernelVal;
+					gradientSumUpper += kernelVal * n;
+				}
+			}
+		}
+
+		Point meanShiftVector = gradientSumUpper / gradientSumLower;
+
+		p = meanShiftVector - p;
+	}
+
+	// 2 ) Find distance with distance metric to all (usually euclidean)
+
+	//  3) With euclidean distance the following kernel is possible: 
+	// kernel K(x) = (C / (hs*hp)) * k (||xs/hs||^2) * k * (||xr/hr||^2)
+	// C <- Normalization constant
+	// hs, hp <- bandwidth for spatial and spectral feature spaces
+
+	// 4) Calculate gradient
+
+	// 5) return to 1, shift p by gradient a fixed number of iterations
+
 	return p;
 }
 
