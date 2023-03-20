@@ -120,7 +120,6 @@ int meanShift(cv::Mat& image) {
 			Point p = { col, row, R, G, B };
 			Point shifted = shift(p, image);
 			cluster(shifted, clusters);
-			printf("debug 1");
 		}
 	}
 
@@ -135,7 +134,7 @@ int meanShift(cv::Mat& image) {
 }
 
 Point cylindricalKernelFunction(Point x, Point xi, double c) {
-	Point distSqrd = (xi -= x) * (xi -= x) * -c;
+	Point distSqrd = (xi - x) * (xi - x) * -c;
 	return distSqrd.exp();
 }
 
@@ -151,8 +150,11 @@ Point shift(Point p, const cv::Mat& image) {
 	int bandwidth_hs = 3;
 	int bandwidth_hr = 2;
 	double C = 2;
-	int iterations = 10;
-
+	int iterations = 3;
+	Point e = { 1, 1, 1, 1, 1 };
+	Point n;
+	cv::Vec3b pixel;
+	Point kernelVal;
 
 	for (int i = 0; i < iterations; i++)
 	{
@@ -163,22 +165,17 @@ Point shift(Point p, const cv::Mat& image) {
 
 				// if we do cylindrical we only care about hs (not colour space)!
 				if (absX * absX + absY * absY <= bandwidth_hs * bandwidth_hs) {
-					cv::Vec3b pixel = image.at<cv::Vec3b>(row, col);
-					int B = pixel[0];
-					int G = pixel[1];
-					int R = pixel[2];
-					Point n = { col, row, R, G, B };
+					pixel = image.at<cv::Vec3b>(row, col);
+					n = { (double)col, (double)row, (double)pixel[0], (double)pixel[1], (double)pixel[2]};
 
-					Point kernelVal = cylindricalKernelFunction(p, n, C);
+					kernelVal = n / (e * std::sqrt(absX * absX + absY * absY));
 					gradientSumLower += kernelVal;
 					gradientSumUpper += kernelVal * n;
 				}
 			}
 		}
 
-		Point meanShiftVector = gradientSumUpper / gradientSumLower;
-
-		p = meanShiftVector - p;
+		p = gradientSumUpper / gradientSumLower - p;
 	}
 
 	// 2 ) Find distance with distance metric to all (usually euclidean)
