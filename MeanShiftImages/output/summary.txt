@@ -1,7 +1,2 @@
-output1.png count: 1
-output2.png count: 1
-output3.png count: 1
-output4.png count: 1
-output5.png count: 1
-output6.png count: 1
-Time elapsed: 1.7 s
+output1.png count: 0
+Time elapsed: 92.9 s

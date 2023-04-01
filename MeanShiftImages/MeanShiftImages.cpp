@@ -27,7 +27,8 @@ int main(void) {
 
 	std::vector<int> counts(images.size(), -1);
 	for (int i = 0; i < images.size(); ++i) {
-		counts[i] = meanShift(images[i]);
+		MeanShift msc(images[i]);
+		counts[i] = msc.meanShift();
 	}
 
 	auto stop = std::chrono::high_resolution_clock::now();

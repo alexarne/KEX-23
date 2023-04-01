@@ -6,10 +6,50 @@
 
 #include <iostream>
 
-struct Point;
-struct Cluster;
+constexpr double EPSILON = 0.000001;
+constexpr int MARKER_RADIUS = 0;
+#define MARKER_COLOR cv::Vec3b(0, 0, 255)
+constexpr double BANDWIDTH = 5.0;
+constexpr double COLOR_COMPRESSION = 64;
+constexpr double INTENSITY_THRESHOLD = 100 / 64;
 
-int meanShift(cv::Mat& image);
-Point shift(Point p, const cv::Mat& images);
-void cluster(Point p, std::vector<Cluster>& clusters);
-void drawMarker(cv::Mat& image, const Point& p);
+class MeanShift {
+public:
+	MeanShift(cv::Mat& image);
+	int meanShift();
+private:
+	cv::Mat& image;
+
+	struct Point {
+		Point();
+		Point(double scalar);
+		Point(double X, double Y);
+		Point(double X, double Y, double G);
+		Point(double X, double Y, double R, double G, double B);
+		double X;
+		double Y;
+		double R;
+		double G;
+		double B;
+		bool operator==(const Point& other) const;
+		Point operator+(const Point& other) const;
+		Point operator-(const Point& other) const;
+		Point operator*(const Point& other) const;
+		Point operator/(const Point& other) const;
+	};
+
+	struct Cluster {
+		Point mean;
+		int count;
+		int tot_R;
+		int tot_G;
+		int tot_B;
+	};
+
+	std::vector<Cluster> clusters;
+	Point shift(const Point& p);
+	double kernel(const Point& x, const Point& xi);
+	void cluster(const Point& p, const Point& p2);
+	void drawMarker(const Point& p);
+	double distSq(const Point& p1, const Point& p2);
+};
