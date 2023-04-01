@@ -9,9 +9,9 @@
 constexpr double EPSILON = 0.000001;
 constexpr int MARKER_RADIUS = 0;
 #define MARKER_COLOR cv::Vec3b(0, 0, 255)
-constexpr double BANDWIDTH = 5.0;
-constexpr double COLOR_COMPRESSION = 64;
-constexpr double INTENSITY_THRESHOLD = 100 / 64;
+constexpr double BANDWIDTH = 3.0;
+constexpr double COLOR_COMPRESSION = 16;
+constexpr double INTENSITY_THRESHOLD = 100 / 16;
 
 class MeanShift {
 public:

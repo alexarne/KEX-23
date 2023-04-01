@@ -1,2 +1,2 @@
 output1.png count: 0
-Time elapsed: 92.9 s
+Time elapsed: 111.5 s

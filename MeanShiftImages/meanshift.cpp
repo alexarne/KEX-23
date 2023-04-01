@@ -18,6 +18,7 @@ int MeanShift::meanShift() {
 			int G = pixel[1];
 			int R = pixel[2];
 			Point p(col, row, R, G, B);
+			//printf("pre shift R=%i G=%i B=%i\n", R, G, B);
 			Point shifted = shift(p);
 			cluster(shifted, p);
 			//drawMarker(shifted);
@@ -33,6 +34,8 @@ int MeanShift::meanShift() {
 }
 
 MeanShift::Point MeanShift::shift(const Point& p) {
+	//printf("shift received %f %f %f %f %f\n", p.X, p.Y, p.R, p.G, p.B);
+	
 	//Point compress = Point(1, 1, COLOR_COMPRESSION);
 	//Point p_curr = p / compress;
 	//Point p_prev;
@@ -43,12 +46,14 @@ MeanShift::Point MeanShift::shift(const Point& p) {
 	p_curr = p_curr / compress;
 	Point p_prev;
 
-	int fromX = std::max(0, (int)(p.X - BANDWIDTH - EPSILON));
-	int toX = std::min(image.cols, (int)(p.X + BANDWIDTH + EPSILON));
-	int fromY = std::max(0, (int)(p.Y - BANDWIDTH - EPSILON));
-	int toY = std::min(image.rows, (int)(p.Y + BANDWIDTH + EPSILON));
-
+	int shifts = 0;
 	while (true) {
+		shifts++;
+		int fromX = std::max(0, (int)(p_curr.X - BANDWIDTH - EPSILON));
+		int toX = std::min(image.cols, (int)(p_curr.X + BANDWIDTH + EPSILON));
+		int fromY = std::max(0, (int)(p_curr.Y - BANDWIDTH - EPSILON));
+		int toY = std::min(image.rows, (int)(p_curr.Y + BANDWIDTH + EPSILON));
+
 		Point tot_weights;
 		double tot_kernel = 0;
 
@@ -70,20 +75,26 @@ MeanShift::Point MeanShift::shift(const Point& p) {
 		if (tot_kernel == 0) break;
 		p_prev = p_curr;
 		p_curr = tot_weights / tot_kernel;
-		if (p_curr == p_prev) break;
+		//printf("shift %i = %f %f %f %f %f\n", shifts, p_curr.X, p_curr.Y, p_curr.R, p_curr.G, p_curr.B);
+		if (p_curr == p_prev) {
+			//printf("convergence.\n");
+			break;
+		}
 	}
-
+	//printf("shifts: %i\n", shifts);
 	return p_curr;
 }
 
 double MeanShift::kernel(const Point& x, const Point& xi) {
 	double dist = distSq(x, xi);
 	if (dist >= BANDWIDTH * BANDWIDTH) return 0;
-	return 1;
+	return 1 - sqrt(dist) / BANDWIDTH;
 }
 
 void MeanShift::cluster(const Point& p, const Point& p2) {
+	//printf("cluster %f %f %f %f %f\n", p.X, p.Y, p.R, p.G, p.B);
 	if ((p.R + p.G + p.B) / 3 > INTENSITY_THRESHOLD) return;
+	//printf("pass\n");
 
 	cv::Vec3b pixel = image.at<cv::Vec3b>(p2.Y, p2.X);
 	if (!(pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 255)) {
@@ -145,6 +156,13 @@ MeanShift::Point::Point(double X, double Y, double R, double G, double B)
 	: X(X), Y(Y), R(R), G(G), B(B) { }
 
 bool MeanShift::Point::operator==(const Point& other) const {
+	//printf("-------------------\n");
+	//printf("diffX: %f\tEPSILON: %f\n", std::fabs(X - other.X), EPSILON);
+	//printf("diffY: %f\tEPSILON: %f\n", std::fabs(Y - other.Y), EPSILON);
+	//printf("diffR: %f\tEPSILON: %f\n", std::fabs(R - other.R), EPSILON);
+	//printf("diffG: %f\tEPSILON: %f\n", std::fabs(G - other.G), EPSILON);
+	//printf("diffB: %f\tEPSILON: %f\n", std::fabs(B - other.B), EPSILON);
+	//printf("-------------------\n");
 	return std::fabs(X - other.X) < EPSILON
 		&& std::fabs(Y - other.Y) < EPSILON
 		&& std::fabs(R - other.R) < EPSILON
