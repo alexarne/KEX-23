@@ -1,12 +1,2 @@
-﻿  meanshift.cpp
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(33,24): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(99,48): warning C4244: 'argument': conversion from 'const double' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(99,42): warning C4244: 'argument': conversion from 'const double' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(101,31): warning C4244: 'argument': conversion from 'const double' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(101,25): warning C4244: 'argument': conversion from 'const double' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(109,26): warning C4244: '+=': conversion from 'const double' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(110,26): warning C4244: '+=': conversion from 'const double' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(111,26): warning C4244: '+=': conversion from 'const double' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(124,37): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(124,28): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+﻿  MeanShiftImages.cpp
   MeanShiftImages.vcxproj -> C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\x64\Debug\MeanShiftImages.exe

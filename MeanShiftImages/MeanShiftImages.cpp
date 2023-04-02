@@ -19,20 +19,26 @@ const cv::String OUTPUT_FOLDER = "./output/";
 const cv::String OUTPUT_FORMAT = ".png";
 
 std::vector<cv::Mat> readImages();
-void writeOutput(const std::vector<cv::Mat>& images, const std::vector<int>& counts, std::chrono::milliseconds ms);
+void writeOutput(const std::vector<int>& counts, std::chrono::milliseconds ms);
 
 int main(void) {
 	std::vector<cv::Mat> images = readImages();
 	auto start = std::chrono::high_resolution_clock::now();
 
+	// Reset output folder
+	std::experimental::filesystem::remove_all(OUTPUT_FOLDER.c_str());
+	std::experimental::filesystem::create_directories(OUTPUT_FOLDER.c_str());
+
 	std::vector<int> counts(images.size(), -1);
 	for (int i = 0; i < images.size(); ++i) {
 		MeanShift msc(images[i]);
 		counts[i] = msc.meanShift();
+		cv::imwrite(OUTPUT_FOLDER + "output" + std::to_string(i + 1) + "" + OUTPUT_FORMAT, msc.output_image);
+		cv::imwrite(OUTPUT_FOLDER + "output" + std::to_string(i + 1) + "_binary" + OUTPUT_FORMAT, msc.output_binary);
 	}
 
 	auto stop = std::chrono::high_resolution_clock::now();
-	writeOutput(images, counts, std::chrono::duration_cast<std::chrono::milliseconds>(stop - start));
+	writeOutput(counts, std::chrono::duration_cast<std::chrono::milliseconds>(stop - start));
 	return 0;
 }
 
@@ -50,27 +56,27 @@ std::vector<cv::Mat> readImages() {
 	return images;
 }
 
-void writeOutput(const std::vector<cv::Mat>& images, const std::vector<int>& counts, std::chrono::milliseconds ms) {
-	// Reset output folder
-	std::experimental::filesystem::remove_all(OUTPUT_FOLDER.c_str());
-	std::experimental::filesystem::create_directories(OUTPUT_FOLDER.c_str());
-
-	// Write output images
-	for (int i = 0; i < images.size(); ++i) {
-		bool status = cv::imwrite(OUTPUT_FOLDER + "output" + std::to_string(i + 1) + OUTPUT_FORMAT, images[i]);
-		if (status == false) {
-			std::cout << "Failed writing image 'output" << std::to_string(i + 1) << OUTPUT_FORMAT << "'\n";
-		}
-	}
+void writeOutput(const std::vector<int>& counts, std::chrono::milliseconds ms) {
+	//// Write output images
+	//for (int i = 0; i < images.size(); ++i) {
+	//	bool status = cv::imwrite(OUTPUT_FOLDER + "output" + std::to_string(i + 1) + OUTPUT_FORMAT, images[i]);
+	//	if (status == false) {
+	//		std::cout << "Failed writing image 'output" << std::to_string(i + 1) << OUTPUT_FORMAT << "'\n";
+	//	}
+	//}
 
 	// Write output summary
 	std::ofstream outputfile;
 	outputfile.open(OUTPUT_FOLDER + "summary.txt");
 	for (int i = 0; i < counts.size(); ++i) {
-		outputfile << "output" << (i + 1) << OUTPUT_FORMAT << " count: " << counts[i] << "\n";
+		outputfile << "output" << (i + 1) << " count: " << counts[i] << "\n";
 	}
 	outputfile << std::fixed << std::setprecision(1);
 	outputfile << "Time elapsed: " << (ms.count() / 1000.0) << " s\n";
+
+	outputfile << "\n--- Settings ---\n";
+	outputfile << "Bandwidth: " << BANDWIDTH << "\n";
+	outputfile << "Color Compression: " << COLOR_COMPRESSION << "\n";
 }
 
 int WinMain(void) {

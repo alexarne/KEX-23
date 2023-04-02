@@ -1,2 +1,6 @@
-output1.png count: 0
-Time elapsed: 111.5 s
+output1 count: 0
+Time elapsed: 11.3 s
+
+--- Settings ---
+Bandwidth: 3.0
+Color Compression: 16.0

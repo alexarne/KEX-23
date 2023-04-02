@@ -5,9 +5,14 @@
 
 
 
-MeanShift::MeanShift(cv::Mat& image) : image(image), clusters(0) { }
+MeanShift::MeanShift(const cv::Mat& image) : image(image), clusters(0) { }
 
 int MeanShift::meanShift() {
+	// Fill black
+	output_binary = image.clone();
+	output_binary = cv::Scalar(0, 0, 0);
+	output_image = image;
+
 	//clusters.push_back({ {100, 50}, 1 });
 
 	for (int row = 0; row < image.rows; ++row) {
@@ -25,10 +30,10 @@ int MeanShift::meanShift() {
 		}
 	}
 
-	// Mark clusters
-	for (const Cluster& c : clusters) {
-		drawMarker(c.mean);
-	}
+	//// Mark clusters
+	//for (const Cluster& c : clusters) {
+	//	drawMarker(c.mean);
+	//}
 
 	return clusters.size();
 }
@@ -92,38 +97,58 @@ double MeanShift::kernel(const Point& x, const Point& xi) {
 }
 
 void MeanShift::cluster(const Point& p, const Point& p2) {
-	//printf("cluster %f %f %f %f %f\n", p.X, p.Y, p.R, p.G, p.B);
 	if ((p.R + p.G + p.B) / 3 > INTENSITY_THRESHOLD) return;
-	//printf("pass\n");
-
-	cv::Vec3b pixel = image.at<cv::Vec3b>(p2.Y, p2.X);
-	if (!(pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 255)) {
-		image.at<cv::Vec3b>(p2.Y, p2.X) = cv::Vec3b(255, 0, 0);
-	}
-
-	drawMarker(p);
+	drawMarker(p, p2);
 	return;
 
-	for (int i = 0; i < clusters.size(); ++i) {
-		if (p == clusters[i].mean) {
-			clusters[i].tot_R += p.R;
-			clusters[i].tot_G += p.G;
-			clusters[i].tot_B += p.B;
-			clusters[i].count++;
-			return;
-		}
-	}
-	clusters.push_back({ p, 1 });
+
+	////printf("cluster %f %f %f %f %f\n", p.X, p.Y, p.R, p.G, p.B);
+	//if ((p.R + p.G + p.B) / 3 > INTENSITY_THRESHOLD) return;
+	////printf("pass\n");
+
+	//cv::Vec3b pixel = image.at<cv::Vec3b>(p2.Y, p2.X);
+	//if (!(pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 255)) {
+	//	image.at<cv::Vec3b>(p2.Y, p2.X) = cv::Vec3b(255, 0, 0);
+	//}
+
+	//drawMarker(p);
+	//return;
+
+	//for (int i = 0; i < clusters.size(); ++i) {
+	//	if (p == clusters[i].mean) {
+	//		clusters[i].tot_R += p.R;
+	//		clusters[i].tot_G += p.G;
+	//		clusters[i].tot_B += p.B;
+	//		clusters[i].count++;
+	//		return;
+	//	}
+	//}
+	//clusters.push_back({ p, 1 });
 }
 
-void MeanShift::drawMarker(const Point& p) {
-	for (int i = -MARKER_RADIUS; i <= MARKER_RADIUS; ++i) {
-		if (p.Y + i < 0 || p.Y + i >= image.rows) continue;
-		for (int j = -MARKER_RADIUS; j <= MARKER_RADIUS; ++j) {
-			if (p.X + j < 0 || p.X + j >= image.cols) continue;
-			image.at<cv::Vec3b>(p.Y + i, p.X + j) = MARKER_COLOR;
-		}
+void MeanShift::drawMarker(const Point& peak, const Point& from) {
+	output_binary.at<cv::Vec3b>(peak.Y, peak.X) = cv::Vec3b(255, 255, 255);
+	output_binary.at<cv::Vec3b>(from.Y, from.X) = cv::Vec3b(255, 255, 255);
+	output_image.at<cv::Vec3b>(peak.Y, peak.X) = cv::Vec3b(0, 0, 255);
+
+	cv::Vec3b pixel = output_image.at<cv::Vec3b>(from.Y, from.X);
+	if (!(pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 255)) {
+		output_image.at<cv::Vec3b>(from.Y, from.X) = cv::Vec3b(255, 0, 0);
 	}
+
+	//for (int i = -MARKER_RADIUS; i <= MARKER_RADIUS; ++i) {
+	//	if (p.Y + i < 0 || p.Y + i >= image.rows) continue;
+	//	for (int j = -MARKER_RADIUS; j <= MARKER_RADIUS; ++j) {
+	//		if (p.X + j < 0 || p.X + j >= image.cols) continue;
+	//		output_binary.at<cv::Vec3b>(p.Y + i, p.X + j) = cv::Vec3b(255, 255, 255);
+	//		output_image.at<cv::Vec3b>(p.Y + i, p.X + j) = cv::Vec3b(0, 0, 255);
+	//		
+	//		cv::Vec3b pixel = output_image.at<cv::Vec3b>(p.Y, p.X);
+	//		if (!(pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 255)) {
+	//			output_image.at<cv::Vec3b>(p.Y, p.X) = cv::Vec3b(255, 0, 0);
+	//		}
+	//	}
+	//}
 }
 
 
