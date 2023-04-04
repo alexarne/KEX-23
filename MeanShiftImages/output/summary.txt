@@ -1,5 +1,5 @@
 output1 count: 0
-Time elapsed: 11.3 s
+Time elapsed: 9.8 s
 
 --- Settings ---
 Bandwidth: 3.0

@@ -30,12 +30,12 @@ private:
 		Point(double scalar);
 		Point(double X, double Y);
 		Point(double X, double Y, double G);
-		Point(double X, double Y, double R, double G, double B);
+		//Point(double X, double Y, double R, double G, double B);
 		double X;
 		double Y;
-		double R;
+		//double R;
 		double G;
-		double B;
+		//double B;
 		bool operator==(const Point& other) const;
 		Point operator+(const Point& other) const;
 		Point operator-(const Point& other) const;

@@ -22,11 +22,10 @@ int MeanShift::meanShift() {
 			int B = pixel[0];
 			int G = pixel[1];
 			int R = pixel[2];
-			Point p(col, row, R, G, B);
-			//printf("pre shift R=%i G=%i B=%i\n", R, G, B);
+			double gray = (R + G + B) / 3.0;
+			Point p(col, row, gray);
 			Point shifted = shift(p);
 			cluster(shifted, p);
-			//drawMarker(shifted);
 		}
 	}
 
@@ -46,9 +45,7 @@ MeanShift::Point MeanShift::shift(const Point& p) {
 	//Point p_prev;
 
 	Point compress = Point(1, 1, COLOR_COMPRESSION);
-	double Gray = (p.R + p.G + p.B) / 3.0;
-	Point p_curr(p.X, p.Y, Gray);
-	p_curr = p_curr / compress;
+	Point p_curr = p / compress;
 	Point p_prev;
 
 	int shifts = 0;
@@ -68,8 +65,8 @@ MeanShift::Point MeanShift::shift(const Point& p) {
 				int B = pixel[0];
 				int G = pixel[1];
 				int R = pixel[2];
-				Gray = (R + G + B) / 3.0;
-				Point p2(x, y, Gray);
+				int gray = (R + G + B) / 3.0;
+				Point p2(x, y, gray);
 				p2 = p2 / compress;
 				double k = kernel(p_curr, p2);
 				tot_weights = tot_weights + p2 * k;
@@ -97,7 +94,7 @@ double MeanShift::kernel(const Point& x, const Point& xi) {
 }
 
 void MeanShift::cluster(const Point& p, const Point& p2) {
-	if ((p.R + p.G + p.B) / 3 > INTENSITY_THRESHOLD) return;
+	if (p.G > INTENSITY_THRESHOLD) return;
 	drawMarker(p, p2);
 	return;
 
@@ -170,15 +167,23 @@ void MeanShift::drawMarker(const Point& peak, const Point& from) {
 
 
 
-MeanShift::Point::Point() : X(0), Y(0), R(0), G(0), B(0) { }
+//MeanShift::Point::Point() : X(0), Y(0), R(0), G(0), B(0) { }
+//MeanShift::Point::Point(double scalar)
+//	: X(scalar), Y(scalar), R(scalar), G(scalar), B(scalar) { }
+//MeanShift::Point::Point(double X, double Y)
+//	: X(X), Y(Y), R(0), G(0), B(0) { }
+//MeanShift::Point::Point(double X, double Y, double G)
+//	: X(X), Y(Y), R(G), G(G), B(G) { }
+//MeanShift::Point::Point(double X, double Y, double R, double G, double B)
+//	: X(X), Y(Y), R(R), G(G), B(B) { }
+
+MeanShift::Point::Point() : X(0), Y(0), G(0) { }
 MeanShift::Point::Point(double scalar)
-	: X(scalar), Y(scalar), R(scalar), G(scalar), B(scalar) { }
+	: X(scalar), Y(scalar), G(scalar) { }
 MeanShift::Point::Point(double X, double Y)
-	: X(X), Y(Y), R(0), G(0), B(0) { }
+	: X(X), Y(Y), G(0) { }
 MeanShift::Point::Point(double X, double Y, double G)
-	: X(X), Y(Y), R(G), G(G), B(G) { }
-MeanShift::Point::Point(double X, double Y, double R, double G, double B)
-	: X(X), Y(Y), R(R), G(G), B(B) { }
+	: X(X), Y(Y), G(G) { }
 
 bool MeanShift::Point::operator==(const Point& other) const {
 	//printf("-------------------\n");
@@ -190,18 +195,18 @@ bool MeanShift::Point::operator==(const Point& other) const {
 	//printf("-------------------\n");
 	return std::fabs(X - other.X) < EPSILON
 		&& std::fabs(Y - other.Y) < EPSILON
-		&& std::fabs(R - other.R) < EPSILON
-		&& std::fabs(G - other.G) < EPSILON
-		&& std::fabs(B - other.B) < EPSILON;
+		//&& std::fabs(R - other.R) < EPSILON
+		//&& std::fabs(B - other.B) < EPSILON
+		&& std::fabs(G - other.G) < EPSILON;
 }
 
 MeanShift::Point MeanShift::Point::operator+(const MeanShift::Point& other) const {
 	Point p;
 	p.X = this->X + other.X;
 	p.Y = this->Y + other.Y;
-	p.R = this->R + other.R;
+	//p.R = this->R + other.R;
 	p.G = this->G + other.G;
-	p.B = this->B + other.B;
+	//p.B = this->B + other.B;
 	return p;
 }
 
@@ -209,9 +214,9 @@ MeanShift::Point MeanShift::Point::operator-(const Point& other) const {
 	Point p;
 	p.X = this->X - other.X;
 	p.Y = this->Y - other.Y;
-	p.R = this->R - other.R;
+	//p.R = this->R - other.R;
 	p.G = this->G - other.G;
-	p.B = this->B - other.B;
+	//p.B = this->B - other.B;
 	return p;
 }
 
@@ -219,9 +224,9 @@ MeanShift::Point MeanShift::Point::operator*(const Point& other) const {
 	Point p;
 	p.X = this->X * other.X;
 	p.Y = this->Y * other.Y;
-	p.R = this->R * other.R;
+	//p.R = this->R * other.R;
 	p.G = this->G * other.G;
-	p.B = this->B * other.B;
+	//p.B = this->B * other.B;
 	return p;
 }
 
@@ -229,9 +234,9 @@ MeanShift::Point MeanShift::Point::operator/(const Point& other) const {
 	Point p;
 	p.X = this->X / other.X;
 	p.Y = this->Y / other.Y;
-	p.R = this->R / other.R;
+	//p.R = this->R / other.R;
 	p.G = this->G / other.G;
-	p.B = this->B / other.B;
+	//p.B = this->B / other.B;
 	return p;
 }
 
@@ -239,7 +244,7 @@ double MeanShift::distSq(const Point& p1, const Point& p2) {
 	Point diff = p1 - p2;
 	return diff.X * diff.X
 		+ diff.Y * diff.Y
-		+ diff.R * diff.R
-		+ diff.G * diff.G
-		+ diff.B * diff.B;
+		//+ diff.R * diff.R
+		//+ diff.B * diff.B
+		+ diff.G * diff.G;
 }
