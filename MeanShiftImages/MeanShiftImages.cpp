@@ -14,9 +14,10 @@
 
 #include "meanshift.h"
 
-const cv::String INPUT_FOLDER = "./input/";
-const cv::String OUTPUT_FOLDER = "./output/";
-const cv::String OUTPUT_FORMAT = ".png";
+const cv::String INPUT_FOLDER = ".\\input\\";
+const cv::String OUTPUT_FOLDER = ".\\output\\";
+const cv::String OUTPUT_FORMAT = ".tif";
+std::vector<std::string> fileNames;
 
 std::vector<cv::Mat> readImages();
 void writeOutput(const std::vector<int>& counts, std::chrono::milliseconds ms);
@@ -33,8 +34,8 @@ int main(void) {
 	for (int i = 0; i < images.size(); ++i) {
 		MeanShift msc(images[i]);
 		counts[i] = msc.meanShift();
-		cv::imwrite(OUTPUT_FOLDER + "output" + std::to_string(i + 1) + "" + OUTPUT_FORMAT, msc.output_image);
-		cv::imwrite(OUTPUT_FOLDER + "output" + std::to_string(i + 1) + "_binary" + OUTPUT_FORMAT, msc.output_binary);
+		cv::imwrite(OUTPUT_FOLDER + fileNames[i] + "" + OUTPUT_FORMAT, msc.output_image);
+		cv::imwrite(OUTPUT_FOLDER + fileNames[i] + "_binary" + OUTPUT_FORMAT, msc.output_binary);
 	}
 
 	auto stop = std::chrono::high_resolution_clock::now();
@@ -47,24 +48,22 @@ std::vector<cv::Mat> readImages() {
 	cv::glob(INPUT_FOLDER, names, false);
 
 	std::vector<cv::Mat> images;
-	for (int i = 0; i < names.size(); ++i) {
-		cv::Mat img = cv::imread(names[i]);
+	for (const cv::String name : names) {
+		cv::Mat img = cv::imread(name);
 		if (img.empty()) continue;	// Not valid
 		images.push_back(img);
+
+		// Strip and save file name
+		std::string fileName = name;
+		fileName = fileName.substr(INPUT_FOLDER.length(), 
+			fileName.find_last_of(".") - INPUT_FOLDER.length());
+		fileNames.push_back(fileName);
 	}
 
 	return images;
 }
 
 void writeOutput(const std::vector<int>& counts, std::chrono::milliseconds ms) {
-	//// Write output images
-	//for (int i = 0; i < images.size(); ++i) {
-	//	bool status = cv::imwrite(OUTPUT_FOLDER + "output" + std::to_string(i + 1) + OUTPUT_FORMAT, images[i]);
-	//	if (status == false) {
-	//		std::cout << "Failed writing image 'output" << std::to_string(i + 1) << OUTPUT_FORMAT << "'\n";
-	//	}
-	//}
-
 	// Write output summary
 	std::ofstream outputfile;
 	outputfile.open(OUTPUT_FOLDER + "summary.txt");
