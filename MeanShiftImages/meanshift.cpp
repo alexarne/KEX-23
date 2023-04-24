@@ -11,7 +11,7 @@ int MeanShift::meanShift() {
 	// Fill black
 	output_binary = image.clone();
 	output_binary = cv::Scalar(0, 0, 0);
-	output_image = image;
+	output_image = image.clone();
 
 	//clusters.push_back({ {100, 50}, 1 });
 
@@ -124,7 +124,7 @@ void MeanShift::cluster(const Point& p, const Point& p2) {
 }
 
 void MeanShift::drawMarker(const Point& peak, const Point& from) {
-	output_binary.at<cv::Vec3b>(peak.Y, peak.X) = cv::Vec3b(255, 255, 255);
+	//output_binary.at<cv::Vec3b>(peak.Y, peak.X) = cv::Vec3b(255, 255, 255);
 	output_binary.at<cv::Vec3b>(from.Y, from.X) = cv::Vec3b(255, 255, 255);
 	output_image.at<cv::Vec3b>(peak.Y, peak.X) = cv::Vec3b(0, 0, 255);
 
