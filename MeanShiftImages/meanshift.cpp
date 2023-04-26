@@ -5,7 +5,7 @@
 
 
 
-MeanShift::MeanShift(const cv::Mat& image) : image(image), clusters(0) { }
+MeanShift::MeanShift(const cv::Mat& image, double Bandwidth, double ColorCompression, double intensityThreshold) : image(image), BANDWIDTH(Bandwidth), COLOR_COMPRESSION(ColorCompression), INTENSITY_THRESHOLD(intensityThreshold), clusters(0) { }
 
 int MeanShift::meanShift() {
 	// Fill black
@@ -16,7 +16,7 @@ int MeanShift::meanShift() {
 	//clusters.push_back({ {100, 50}, 1 });
 
 	for (int row = 0; row < image.rows; ++row) {
-		printf("row %i\n", row);
+		//printf("row %i\n", row);
 		for (int col = 0; col < image.cols; ++col) {
 			cv::Vec3b pixel = image.at<cv::Vec3b>(row, col);
 			int B = pixel[0];
@@ -27,6 +27,7 @@ int MeanShift::meanShift() {
 			Point shifted = shift(p);
 			cluster(shifted, p);
 		}
+		printf(".");
 	}
 
 	//// Mark clusters

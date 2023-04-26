@@ -1,1 +1,2 @@
 C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\x64\Debug\MeanShiftImages.exe
+C:\Users\filip\Documents\GitHub\KEX-23\MeanShiftImages\x64\Debug\MeanShiftImages.exe

@@ -22,6 +22,12 @@ std::vector<std::string> fileNames;
 std::vector<cv::Mat> readImages();
 void writeOutput(const std::vector<int>& counts, std::chrono::milliseconds ms);
 
+/**
+* bandwidth 1, 3, 5, 7
+* threshold 90, 95, 100, 105, 110
+* compression 4, 6, 8, 10, 12
+*/
+
 int main(void) {
 	std::vector<cv::Mat> images = readImages();
 	auto start = std::chrono::high_resolution_clock::now();
@@ -30,13 +36,40 @@ int main(void) {
 	std::experimental::filesystem::remove_all(OUTPUT_FOLDER.c_str());
 	std::experimental::filesystem::create_directories(OUTPUT_FOLDER.c_str());
 
+	std::vector<int> bandwidths = { 1, 3, 5};
+	std::vector<int> threshold = { 90, 95, 100, 105, 110 };
+	std::vector<int> compression = { 4, 6, 8, 10, 12 };
+
+	const std::vector<std::string> bs = { "bs1", "bs3", "bs5", "7", "9" };
+	const std::vector<std::string> ts = { "ts90", "ts95", "ts100", "ts105", "ts110" };
+	const std::vector<std::string> cs = { "cs4", "cs6", "cs8", "cs10", "cs12" };
+
 	std::vector<int> counts(images.size(), -1);
-	for (int i = 0; i < images.size(); ++i) {
-		MeanShift msc(images[i]);
-		counts[i] = msc.meanShift();
-		cv::imwrite(OUTPUT_FOLDER + fileNames[i] + "" + OUTPUT_FORMAT, msc.output_image);
-		cv::imwrite(OUTPUT_FOLDER + fileNames[i] + "_binary" + OUTPUT_FORMAT, msc.output_binary);
+	cv::String FILE;
+
+	for (int a = 0; a < 3; a++)
+	{
+		for (int b = 0; b < 5; b++)
+		{
+			for (int c = 0; c < 5; c++)
+			{
+			    //OUTPUT_SUB_FOLDER = ("b" + bandwidths[a] + "t" + threshold[b] + "c:" + compression[c]);
+				//std::cout << OUTPUT_SUB_FOLDER;
+				//std::experimental::filesystem::create_directories(OUTPUT_SUB_FOLDER.c_str());
+				printf("%d%d%d\n", a, b, c);
+				
+				for (int i = 0; i < images.size(); ++i) {
+					MeanShift msc(images[i], bandwidths[a], compression[c], threshold[b] / compression[c]);
+					counts[i] = msc.meanShift();
+					//cv::imwrite(OUTPUT_FOLDER + fileNames[i] + "" + OUTPUT_FORMAT, msc.output_image);
+					cv::imwrite(OUTPUT_FOLDER + bs[a] + ts[b] + cs[c] + fileNames[i] + OUTPUT_FORMAT, msc.output_binary);
+				}
+			}
+		}
 	}
+
+	printf("stopped");
+
 
 	auto stop = std::chrono::high_resolution_clock::now();
 	writeOutput(counts, std::chrono::duration_cast<std::chrono::milliseconds>(stop - start));
@@ -74,8 +107,8 @@ void writeOutput(const std::vector<int>& counts, std::chrono::milliseconds ms) {
 	outputfile << "Time elapsed: " << (ms.count() / 1000.0) << " s\n";
 
 	outputfile << "\n--- Settings ---\n";
-	outputfile << "Bandwidth: " << BANDWIDTH << "\n";
-	outputfile << "Color Compression: " << COLOR_COMPRESSION << "\n";
+	//outputfile << "Bandwidth: " << BANDWIDTH << "\n";
+	//outputfile << "Color Compression: " << COLOR_COMPRESSION << "\n";
 }
 
 int WinMain(void) {

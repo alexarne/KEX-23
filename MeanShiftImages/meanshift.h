@@ -7,9 +7,9 @@
 #include <iostream>
 
 // Algorithm parameters
-constexpr double BANDWIDTH = 3.0;
-constexpr double COLOR_COMPRESSION = 32;
-constexpr double INTENSITY_THRESHOLD = 100 / COLOR_COMPRESSION;
+// double BANDWIDTH = 3.0;
+// double COLOR_COMPRESSION = 32;
+// double INTENSITY_THRESHOLD = 100 / COLOR_COMPRESSION;
 
 
 constexpr double EPSILON = 0.000001;
@@ -23,10 +23,14 @@ public:
 	cv::Mat output_binary;
 	cv::Mat output_image;
 
-	MeanShift(const cv::Mat& image);
+	MeanShift(const cv::Mat& image, double Bandwidth, double ColorCompression, double intensityThreshold);
 	int meanShift();
 private:
 	cv::Mat image;
+	
+	double BANDWIDTH;
+	double COLOR_COMPRESSION;
+	double INTENSITY_THRESHOLD;
 
 	struct Point {
 		Point();
