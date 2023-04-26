@@ -20,7 +20,7 @@ const cv::String OUTPUT_FORMAT = ".tif";
 std::vector<std::string> fileNames;
 
 std::vector<cv::Mat> readImages();
-void writeOutput(const std::vector<int>& counts, std::chrono::milliseconds ms);
+void writeSummary(std::chrono::milliseconds ms);
 
 int main(void) {
 	std::vector<cv::Mat> images = readImages();
@@ -30,16 +30,37 @@ int main(void) {
 	std::experimental::filesystem::remove_all(OUTPUT_FOLDER.c_str());
 	std::experimental::filesystem::create_directories(OUTPUT_FOLDER.c_str());
 
-	std::vector<int> counts(images.size(), -1);
-	for (int i = 0; i < images.size(); ++i) {
-		MeanShift msc(images[i]);
-		counts[i] = msc.meanShift();
-		cv::imwrite(OUTPUT_FOLDER + fileNames[i] + "" + OUTPUT_FORMAT, msc.output_image);
-		cv::imwrite(OUTPUT_FOLDER + fileNames[i] + "_binary" + OUTPUT_FORMAT, msc.output_binary);
+	// All parameter combinations to test (one of each for singular tests)
+	std::vector<double> bands{ 3.0 };
+	std::vector<double> compr{ 16.0 };
+	std::vector<double> thrsh{ 100.0 };
+	//std::vector<double> bands{ 1.0, 2.0, 3.0, 4.0, 5.0 };
+	//std::vector<double> compr{ 4.0, 6.0, 8.0, 10.0, 12.0 };
+	//std::vector<double> thrsh{ 90.0, 95.0, 100.0, 105.0, 110.0 };
+
+	for (const double& b : bands) {
+		for (const double& c : compr) {
+			for (const double& t : thrsh) {
+				// Tree structured folder names with 1 decimal value
+				std::string SUBFOLDER = OUTPUT_FOLDER + "\\"
+					+ "BANDW=" + std::to_string(b).substr(0, std::to_string(b).find_last_of(".") + 2) + "\\"
+					+ "COMPR=" + std::to_string(c).substr(0, std::to_string(c).find_last_of(".") + 2) + "\\"
+					+ "THRSH=" + std::to_string(t).substr(0, std::to_string(t).find_last_of(".") + 2) + "\\";
+				std::experimental::filesystem::create_directories(SUBFOLDER.c_str());
+				
+				for (int i = 0; i < images.size(); ++i) {
+					MeanShift msc(images[i]);
+					msc.setParameters(b, c, t);
+					msc.meanShift();
+					cv::imwrite(SUBFOLDER + fileNames[i] + "" + OUTPUT_FORMAT, msc.output_image);
+					cv::imwrite(SUBFOLDER + fileNames[i] + "_binary" + OUTPUT_FORMAT, msc.output_binary);
+				}
+			}
+		}
 	}
 
 	auto stop = std::chrono::high_resolution_clock::now();
-	writeOutput(counts, std::chrono::duration_cast<std::chrono::milliseconds>(stop - start));
+	writeSummary(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start));
 	return 0;
 }
 
@@ -63,19 +84,11 @@ std::vector<cv::Mat> readImages() {
 	return images;
 }
 
-void writeOutput(const std::vector<int>& counts, std::chrono::milliseconds ms) {
-	// Write output summary
+void writeSummary(std::chrono::milliseconds ms) {
 	std::ofstream outputfile;
 	outputfile.open(OUTPUT_FOLDER + "summary.txt");
-	for (int i = 0; i < counts.size(); ++i) {
-		outputfile << "output" << (i + 1) << " count: " << counts[i] << "\n";
-	}
 	outputfile << std::fixed << std::setprecision(1);
 	outputfile << "Time elapsed: " << (ms.count() / 1000.0) << " s\n";
-
-	outputfile << "\n--- Settings ---\n";
-	outputfile << "Bandwidth: " << BANDWIDTH << "\n";
-	outputfile << "Color Compression: " << COLOR_COMPRESSION << "\n";
 }
 
 int WinMain(void) {
