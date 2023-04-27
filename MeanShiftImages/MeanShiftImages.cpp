@@ -31,7 +31,7 @@ int main(void) {
 	std::experimental::filesystem::create_directories(OUTPUT_FOLDER.c_str());
 
 	// All parameter combinations to test (one of each for singular tests)
-	std::vector<double> bands{ 3.0 };
+	std::vector<double> bands{ 2.0 };
 	std::vector<double> compr{ 16.0 };
 	std::vector<double> thrsh{ 100.0 };
 	//std::vector<double> bands{ 1.0, 2.0, 3.0, 4.0, 5.0 };

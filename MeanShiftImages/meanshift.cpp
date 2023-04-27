@@ -45,6 +45,7 @@ void MeanShift::meanShift() {
 }
 
 MeanShift::Point MeanShift::shift(const Point& p) {
+	//printf("begin shift\n");
 	Point compress = Point(1, 1, COLOR_COMPRESSION);
 	Point p_curr = p / compress;
 	Point p_prev;
@@ -53,21 +54,21 @@ MeanShift::Point MeanShift::shift(const Point& p) {
 	while (true) {
 		shifts++;
 		int fromX = std::max(0, (int)(p_curr.X - BANDWIDTH - EPSILON));
-		int toX = std::min(image.cols, (int)(p_curr.X + BANDWIDTH + EPSILON));
+		int toX = std::min(image.cols-1, (int)(p_curr.X + BANDWIDTH + EPSILON));
 		int fromY = std::max(0, (int)(p_curr.Y - BANDWIDTH - EPSILON));
-		int toY = std::min(image.rows, (int)(p_curr.Y + BANDWIDTH + EPSILON));
-
+		int toY = std::min(image.rows-1, (int)(p_curr.Y + BANDWIDTH + EPSILON));
+		//printf("fromx %i tox %i fromy %i toy %i\n", fromX, toX, fromY, toY);
 		Point tot_weights;
 		double tot_kernel = 0;
 
-		for (int x = fromX; x < toX; x++) {
-			for (int y = fromY; y < toY; y++) {
+		for (int x = fromX; x <= toX; x++) {
+			for (int y = fromY; y <= toY; y++) {
 				cv::Vec3b pixel = image.at<cv::Vec3b>(y, x);
 				int B = pixel[0];
 				int G = pixel[1];
 				int R = pixel[2];
 				int gray = (R + G + B) / 3.0;
-				Point p2(x, y, gray);
+				Point p2(x,  y, gray);
 				p2 = p2 / compress;
 				double k = kernel(p_curr, p2);
 				tot_weights = tot_weights + p2 * k;
@@ -78,7 +79,7 @@ MeanShift::Point MeanShift::shift(const Point& p) {
 		if (tot_kernel == 0) break;
 		p_prev = p_curr;
 		p_curr = tot_weights / tot_kernel;
-		//printf("shift %i = %f %f %f %f %f\n", shifts, p_curr.X, p_curr.Y, p_curr.R, p_curr.G, p_curr.B);
+		//printf("shift %i = %f %f %f\n", shifts, p_curr.X, p_curr.Y, p_curr.G);
 		if (p_curr == p_prev) {
 			//printf("convergence.\n");
 			break;
