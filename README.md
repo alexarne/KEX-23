@@ -2,7 +2,7 @@
 
 
 
-## Install and run
+## Install and Run
 
 The project is built using OpenCV 4.7.0 for C++ using Visual Studio 2022. "Debug" and "Release" modes for x64 are configured, 
 with the only assumption being that the OpenCV installation is in `C:\opencv`.
