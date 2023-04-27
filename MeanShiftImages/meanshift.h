@@ -18,6 +18,10 @@ public:
 	MeanShift(const cv::Mat& image);
 	void setParameters(double bandwidth, double colorcompression, double threshold);
 	void meanShift();
+
+	// Print progress
+	void setProgressString(std::string s);
+	void clearProgress();
 private:
 	cv::Mat image;
 
@@ -55,4 +59,8 @@ private:
 	double kernel(const Point& x, const Point& xi);
 	void drawMarker(const Point& peak, const Point& from);
 	double distSq(const Point& p1, const Point& p2);
+
+	// Print progress
+	std::string progressString;
+	void printProgress(double perc);
 };

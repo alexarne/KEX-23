@@ -1,20 +1,8 @@
 ﻿  MeanShiftImages.cpp
-  meanshift.cpp
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(3,23): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(40,16): warning C4838: conversion from 'int' to 'double' requires a narrowing conversion
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(40,21): warning C4838: conversion from 'int' to 'double' requires a narrowing conversion
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(40,26): warning C4838: conversion from 'int' to 'double' requires a narrowing conversion
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(40,29): warning C4838: conversion from 'int' to 'double' requires a narrowing conversion
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(40,32): warning C4838: conversion from 'int' to 'double' requires a narrowing conversion
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(51,24): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(61,26): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(62,26): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(63,26): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(76,37): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\meanshift.cpp(76,28): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\MeanShiftImages.cpp(45,56): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   Generating code
-  3 of 648 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
-    1 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+  1 of 709 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   MeanShiftImages.vcxproj -> C:\Users\alexg\Desktop\PCR\Schoolwork\Hogskola\Programmering\Personal GitHub\KEX-23\MeanShiftImages\x64\Release\MeanShiftImages.exe

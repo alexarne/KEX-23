@@ -18,16 +18,22 @@ void MeanShift::setParameters(double bandwidth, double colorcompression, double 
 	INTENSITY_THRESHOLD = threshold / colorcompression;
 }
 
-void MeanShift::meanShift() {
-	//printf("parameters are %f %f %f\n", BANDWIDTH, COLOR_COMPRESSION, INTENSITY_THRESHOLD);
+void MeanShift::setProgressString(std::string s) { progressString = s; }
+void MeanShift::printProgress(double perc) {
+	std::cout << progressString << int(perc*100.0) << "%\r";
+}
+void MeanShift::clearProgress() {
+	std::cout << "\33[2K\r";
+}
 
+void MeanShift::meanShift() {
 	// Fill black
 	output_binary = image.clone();
 	output_binary = cv::Scalar(0, 0, 0);
 	output_image = image.clone();
 
 	for (int row = 0; row < image.rows; ++row) {
-		printf("row %i\n", row);
+		printProgress(double(row) / image.rows);
 		for (int col = 0; col < image.cols; ++col) {
 			cv::Vec3b pixel = image.at<cv::Vec3b>(row, col);
 			int B = pixel[0];
@@ -42,6 +48,8 @@ void MeanShift::meanShift() {
 			}
 		}
 	}
+
+	printProgress(1.0);
 }
 
 MeanShift::Point MeanShift::shift(const Point& p) {
