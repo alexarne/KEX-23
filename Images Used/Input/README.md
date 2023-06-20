@@ -1,3 +1,5 @@
+# Input Images
+
 Images are from the coronal experiment 72109410 targetting Adora2a genes.
 
 Images are centered on the striatum from slices 336, 352, 360, 376, 384.
