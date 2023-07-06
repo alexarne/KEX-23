@@ -7,8 +7,6 @@
 #include <iostream>
 
 constexpr double EPSILON = 0.000001;
-constexpr int MARKER_RADIUS = 0;
-#define MARKER_COLOR cv::Vec3b(255, 255, 255)
 
 class MeanShift {
 public:

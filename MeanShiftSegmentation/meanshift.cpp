@@ -1,12 +1,8 @@
-
 #include <math.h>
 #include "meanshift.h"
 
-
-
-
 MeanShift::MeanShift(const cv::Mat& image) : image(image) {
-	// defaults
+	// Default values
 	BANDWIDTH = 3.0;
 	COLOR_COMPRESSION = 32;
 	INTENSITY_THRESHOLD = 100 / COLOR_COMPRESSION;
@@ -19,6 +15,7 @@ void MeanShift::setParameters(double bandwidth, double colorcompression, double 
 }
 
 void MeanShift::setProgressString(std::string s) { progressString = s; }
+
 void MeanShift::printProgress(double perc) {
 	std::cout << progressString << int(perc*100.0) << "%\r";
 }
@@ -53,19 +50,16 @@ void MeanShift::meanShift() {
 }
 
 MeanShift::Point MeanShift::shift(const Point& p) {
-	//printf("begin shift\n");
 	Point compress = Point(1, 1, COLOR_COMPRESSION);
 	Point p_curr = p / compress;
 	Point p_prev;
 
-	int shifts = 0;
 	while (true) {
-		shifts++;
 		int fromX = std::max(0, (int)(p_curr.X - BANDWIDTH - EPSILON));
 		int toX = std::min(image.cols-1, (int)(p_curr.X + BANDWIDTH + EPSILON));
 		int fromY = std::max(0, (int)(p_curr.Y - BANDWIDTH - EPSILON));
 		int toY = std::min(image.rows-1, (int)(p_curr.Y + BANDWIDTH + EPSILON));
-		//printf("fromx %i tox %i fromy %i toy %i\n", fromX, toX, fromY, toY);
+
 		Point tot_weights;
 		double tot_kernel = 0;
 
@@ -87,13 +81,13 @@ MeanShift::Point MeanShift::shift(const Point& p) {
 		if (tot_kernel == 0) break;
 		p_prev = p_curr;
 		p_curr = tot_weights / tot_kernel;
-		//printf("shift %i = %f %f %f\n", shifts, p_curr.X, p_curr.Y, p_curr.G);
+
 		if (p_curr == p_prev) {
-			//printf("convergence.\n");
+			// Convergence
 			break;
 		}
 	}
-	//printf("shifts: %i\n", shifts);
+
 	return p_curr;
 }
 
@@ -107,6 +101,7 @@ void MeanShift::drawMarker(const Point& peak, const Point& from) {
 	output_binary.at<cv::Vec3b>(from.Y, from.X) = cv::Vec3b(255, 255, 255);
 	output_image.at<cv::Vec3b>(peak.Y, peak.X) = cv::Vec3b(0, 0, 255);
 
+	// If not already marked as peak, mark as "travelling" to peak
 	cv::Vec3b pixel = output_image.at<cv::Vec3b>(from.Y, from.X);
 	if (!(pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 255)) {
 		output_image.at<cv::Vec3b>(from.Y, from.X) = cv::Vec3b(255, 0, 0);

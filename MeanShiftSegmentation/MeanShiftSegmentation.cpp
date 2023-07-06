@@ -8,6 +8,7 @@
 #include <fstream>
 #include <chrono>
 #include <iomanip>
+#include <sstream>
 #include <windows.h>
 
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
@@ -51,21 +52,36 @@ int main(void) {
 		for (const double& c : compr) {
 			for (const double& t : thrsh) {
 				// Tree structured folder names with 1 decimal value
-				std::string combination = "BANDW=" + std::to_string(b).substr(0, std::to_string(b).find_last_of(".") + 2) + "\\"
-					+ "COMPR=" + std::to_string(c).substr(0, std::to_string(c).find_last_of(".") + 2) + "\\"
-					+ "THRSH=" + std::to_string(t).substr(0, std::to_string(t).find_last_of(".") + 2) + "\\";
+				std::string bval = std::to_string(b);
+				std::string cval = std::to_string(c);
+				std::string tval = std::to_string(t);
+				// Trim trailing zeros
+				while (bval[bval.size() - 1] == '0' || bval[bval.size() - 1] == '.') bval.resize(bval.size() - 1);
+				while (cval[cval.size() - 1] == '0' || cval[cval.size() - 1] == '.') cval.resize(cval.size() - 1);
+				while (tval[tval.size() - 1] == '0' || tval[tval.size() - 1] == '.') tval.resize(tval.size() - 1);
+				if (bval.size() == 0) bval = "0";
+				if (cval.size() == 0) cval = "0";
+				if (tval.size() == 0) tval = "0";
+
+				std::string combination = "BANDW=" + bval + "\\"
+					+ "COMPR=" + cval + "\\"
+					+ "THRSH=" + tval + "\\";
 				std::cout << "Running " << combination << " (" << ++process << "/" << total << "):\n";
 
 				std::string SUBFOLDER = OUTPUT_FOLDER + "\\" + combination;
 				std::experimental::filesystem::create_directories(SUBFOLDER.c_str());
 				
+				// Perform meanshift
 				for (int i = 0; i < images.size(); ++i) {
 					MeanShift msc(images[i]);
+
 					std::string s = "Image " + std::to_string(i + 1) + "/" + std::to_string(images.size()) + ": ";
 					msc.setProgressString(s);
 					msc.clearProgress();
+
 					msc.setParameters(b, c, t);
 					msc.meanShift();
+
 					cv::imwrite(SUBFOLDER + fileNames[i] + "" + OUTPUT_FORMAT, msc.output_image);
 					cv::imwrite(SUBFOLDER + fileNames[i] + "_binary" + OUTPUT_FORMAT, msc.output_binary);
 				}
@@ -103,9 +119,12 @@ std::vector<cv::Mat> readImages() {
 }
 
 std::vector<double> getVector(std::string str) {
-	std::cout << str << "\n";
+	std::vector<double> vec;
+	std::stringstream ss(str);
 	std::string buffer;
-	return std::vector<double>();
+	ss >> buffer;
+	while (ss >> buffer) vec.push_back(std::stod(buffer));
+	return vec;
 }
 
 void writeSummary(std::chrono::milliseconds ms) {
