@@ -17,11 +17,12 @@
 
 const cv::String INPUT_FOLDER = ".\\input\\";
 const cv::String OUTPUT_FOLDER = ".\\output\\";
-const cv::String OUTPUT_FORMAT = ".tif";
+const cv::String OUTPUT_FORMAT = ".png";
 std::vector<std::string> fileNames;
 
 void ShowConsoleCursor(bool showFlag);
 std::vector<cv::Mat> readImages();
+std::vector<double> getVector(std::string str);
 void writeSummary(std::chrono::milliseconds ms);
 
 int main(void) {
@@ -33,13 +34,16 @@ int main(void) {
 	std::experimental::filesystem::remove_all(OUTPUT_FOLDER.c_str());
 	std::experimental::filesystem::create_directories(OUTPUT_FOLDER.c_str());
 
-	// All parameter combinations to test (one of each for singular tests)
-	std::vector<double> bands{ 5.0 };
-	std::vector<double> compr{ 6.0 };
-	std::vector<double> thrsh{ 100.0 };
-	//std::vector<double> bands{ 1.0, 2.0, 3.0, 4.0, 5.0 };
-	//std::vector<double> compr{ 4.0, 6.0, 8.0, 10.0, 12.0 };
-	//std::vector<double> thrsh{ 90.0, 95.0, 100.0, 105.0, 110.0 };
+	// Read settings.cfg for parameters
+	std::ifstream inputfile;
+	inputfile.open(INPUT_FOLDER + "settings.cfg");
+	std::string line;
+	std::getline(inputfile, line);
+	std::vector<double> bands = getVector(line);
+	std::getline(inputfile, line);
+	std::vector<double> compr = getVector(line);
+	std::getline(inputfile, line);
+	std::vector<double> thrsh = getVector(line);
 
 	int process = 0;
 	int total = bands.size() * compr.size() * thrsh.size();
@@ -96,6 +100,12 @@ std::vector<cv::Mat> readImages() {
 	}
 
 	return images;
+}
+
+std::vector<double> getVector(std::string str) {
+	std::cout << str << "\n";
+	std::string buffer;
+	return std::vector<double>();
 }
 
 void writeSummary(std::chrono::milliseconds ms) {

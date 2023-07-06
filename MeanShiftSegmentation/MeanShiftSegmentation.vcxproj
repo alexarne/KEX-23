@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{3104b96f-f354-4e9b-ad72-1719cdfe14ed}</ProjectGuid>
-    <RootNamespace>MeanShiftImages</RootNamespace>
+    <RootNamespace>MeanShiftSegmentation</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -138,7 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="meanshift.cpp" />
-    <ClCompile Include="MeanShiftImages.cpp" />
+    <ClCompile Include="MeanShiftSegmentation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="meanshift.h" />

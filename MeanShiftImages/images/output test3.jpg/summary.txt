@@ -1,6 +1,0 @@
-output1 count: 0
-Time elapsed: 866.3 s
-
---- Settings ---
-Bandwidth: 3.0
-Color Compression: 16 

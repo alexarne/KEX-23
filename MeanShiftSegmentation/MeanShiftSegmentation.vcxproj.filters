@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MeanShiftImages.cpp">
+    <ClCompile Include="MeanShiftSegmentation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="meanshift.cpp">
